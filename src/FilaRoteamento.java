@@ -4,7 +4,6 @@ import java.util.PriorityQueue;
 public class FilaRoteamento {
 	
     private float tempoTotal = 0;
-	private float tempoInicial = 0;
     private PriorityQueue<Evento> agenda;
     private LinkedList<Float> aleatorios;
 	private LinkedList<Fila> filas;
@@ -12,22 +11,28 @@ public class FilaRoteamento {
 
     private float[] intervaloChegada;
 
-	private int n;
-	private int seed;
 
-	public FilaRoteamento(LinkedList<Fila> filas, float[] intervaloChegada, float tempoInicial, int n, int seed) {
+	public FilaRoteamento(LinkedList<Fila> filas, float[] intervaloChegada, float tempoInicial, int n, int x0) {
 		this.filas= filas;
 		this.intervaloChegada = intervaloChegada;
-		this.n = n;
-		this.seed = seed;
 		agenda = new PriorityQueue<Evento>();
 		aleatorios = new LinkedList<Float>();
-		geraAleatorios(n, seed);
-		agenda.add(new Evento(tempoInicial, filas.get(0), filas.get(1), 'c'));
+		geraAleatorios(n, x0);
+		agenda.add(new Evento(tempoInicial, filas.getFirst(), filas.getFirst(), 'c'));
 	}
 
-    public void run() {
+	public FilaRoteamento(LinkedList<Fila> filas, float[] intervaloChegada, float tempoInicial, LinkedList<Float> aleatorios) {
+		this.filas= filas;
+		this.intervaloChegada = intervaloChegada;
+		this.aleatorios = aleatorios;
+		agenda = new PriorityQueue<Evento>();
+		aleatorios = new LinkedList<Float>();
+		agenda.add(new Evento(tempoInicial, filas.getFirst(), filas.getFirst(), 'c'));
+	}
 
+
+    public void run() {
+		//usa dois aleatorios a menos lembrar disso ao testar com aleatorios controlados
 		while(aleatorios.size() > 2) {
 			e = agenda.poll();
 
@@ -91,29 +96,12 @@ public class FilaRoteamento {
 		}
 	}
 
-	public void geraAleatorios(int n, int seed) {
-		float aux = seed;
-		/*for(int i=0;i<n;i++) {
+	public void geraAleatorios(int n, int x0) {
+		float aux = x0;
+		for(int i=0;i<n;i++) {
 			aux = (float) (((aux * 25.214903917) + 11) % Math.pow(2, 44));
 			aleatorios.add((float)(aux/Math.pow(2, 44)));
-		}*/
-		aleatorios.add((float) 0.2176);
-		aleatorios.add((float) 0.0103);
-		aleatorios.add((float) 0.1109);
-		aleatorios.add((float) 0.3456);
-		aleatorios.add((float) 0.991);
-		aleatorios.add((float) 0.2323);
-		aleatorios.add((float) 0.9211);
-		aleatorios.add((float) 0.0322);
-		aleatorios.add((float) 0.1211);
-		aleatorios.add((float) 0.5131);
-		aleatorios.add((float) 0.7208);
-		aleatorios.add((float) 0.9172);
-		aleatorios.add((float) 0.9922);
-		aleatorios.add((float) 0.8324);
-		
-		aleatorios.add((float) 0.5011);
-		aleatorios.add((float) 0.2931);
+		}
 	}
 
 	public float rand(float a, float b) {
@@ -128,8 +116,17 @@ public class FilaRoteamento {
 				i++;
 			}
 			i = 0;
-			System.out.println(f);
-			System.out.println(f.getEstados());
+			System.out.println("---------------------------------------");
+			System.out.println("Fila: "+f);
+			System.out.println("Atendimento: "+f.getInicioA()+" ... "+f.getFimA());
+			System.out.println("---------------------------------------");
+			System.out.println("Estado			Probabilidade");
+			int j = 0;
+			while(f.getEstados().get(j) != null) {
+				System.out.println(j+"                       "+ String.format("%.2f", f.get(j)) +"%");
+				j++;
+			}
+			j = 0;
 			System.out.println("Perdas: "+f.getPerdas());
 		}
 		System.out.println("Tempo Total: "+tempoTotal);

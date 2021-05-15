@@ -1,8 +1,8 @@
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 
 public class Fila {
+    private String id;
     private int f;
     //servidores
     private int c;
@@ -10,24 +10,32 @@ public class Fila {
     private int k;
     private int perdas = 0;
     private PriorityQueue<Par<Fila, Float>> q;
-    private float[] intervaloAtendimento;
+    private float inicioAtendimento;
+    private float fimAtendimento;
 	private HashMap<Integer, Float> estados;
     
-    public Fila(int c, int k, float[] intervaloAtendimento, PriorityQueue<Par<Fila, Float>> q) {
+    public Fila(String id, int c, int k, float inicioAtendimento, float fimAtendimento) {
+        this.id = id;
         this.f = 0;
         this.c = c;
         this.k = k;
-        this.q = q;
-        this. intervaloAtendimento = intervaloAtendimento;
+        this.q =  new PriorityQueue<Par<Fila, Float>>();
+        this.inicioAtendimento = inicioAtendimento;
+        this.fimAtendimento = fimAtendimento;
         estados = new HashMap<Integer, Float>();
     }
 
-    public Fila(int c, int k, float[] intervaloAtendimento) {
+    public Fila(int c, int k, float inicioAtendimento, float fimAtendimento) {
         this.f = 0;
         this.c = c;
         this.k = k;
-        this. intervaloAtendimento = intervaloAtendimento;
+        this.inicioAtendimento = inicioAtendimento;
+        this.fimAtendimento = fimAtendimento;
         estados = new HashMap<Integer, Float>();
+    }
+
+    public String getId() {
+        return id;
     }
 
     public int getF() {
@@ -42,20 +50,20 @@ public class Fila {
         return k;
     }
 
-    public float[] getIntervaloAtendimento() {
-        return intervaloAtendimento;
-    }
-
     public float getInicioA() {
-        return intervaloAtendimento[0];
+        return inicioAtendimento;
     }
 
     public float getFimA() {
-        return intervaloAtendimento[1];
+        return fimAtendimento;
     }
 
     public void inc() {
         this.f++;
+    }
+
+    public void add(Fila target, Float prob) {
+        q.add(new Par<Fila, Float>(target, prob));
     }
 
     public Evento target(Float prob, Float tempo, Fila source) {
