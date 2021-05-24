@@ -4,11 +4,10 @@ import java.util.PriorityQueue;
 public class Fila {
     private String id;
     private int f;
-    //servidores
     private int c;
-    //capacidade
     private int k;
     private int perdas = 0;
+    //par com fila/probabilidade
     private PriorityQueue<Par<Fila, Float>> q;
     private float inicioAtendimento;
     private float fimAtendimento;
@@ -66,14 +65,18 @@ public class Fila {
         q.add(new Par<Fila, Float>(target, prob));
     }
 
+    //percorre a fila com as probabilidades e agenda saida ou passagem
     public Evento target(Float prob, Float tempo, Fila source) {
+        //acumula as probabilidades em ordem decrescente ate encontrar a fila destino caso nao encontre agenda uma saida
         float acc = 0;
         for(Par<Fila, Float> par : q) {
             acc += par.getProb();
-            if(prob < acc) {
+            if(prob <= acc) {
+                //agenda uma passagem de uma fila para outra de acordo com as probabilidades
                 return new Evento(tempo, source, par.getFila(), 'p');
             }
         }
+        //ou agenda uma saida
         return new Evento(tempo, source, source, 's');
     }
 

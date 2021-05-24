@@ -27,4 +27,7 @@ public class Par<Fila, Float> implements Comparable<Par>{
     public int compareTo(Par o) {
         return (int) (o.getProb() - this.prob);
     }
+    public String toString() {
+        return "("+ fila +","+ prob +")";
+    }
 }

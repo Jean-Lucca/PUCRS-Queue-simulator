@@ -1,23 +1,29 @@
 import java.util.LinkedList;
 import java.util.PriorityQueue;
+import java.util.*;
 
 public class FilaRoteamento {
 	
     private float tempoTotal = 0;
+	//escalonador de eventos ordenado pelo tempo
     private PriorityQueue<Evento> agenda;
+	//lista de aleatorios
     private LinkedList<Float> aleatorios;
+	//lista de filas
 	private LinkedList<Fila> filas;
 	private Evento e;
 
     private float[] intervaloChegada;
 
-
+	//filas, intervalo de chegada, chegada inicial, numero de aleatorios, seed
 	public FilaRoteamento(LinkedList<Fila> filas, float[] intervaloChegada, float tempoInicial, int n, int x0) {
 		this.filas= filas;
 		this.intervaloChegada = intervaloChegada;
 		agenda = new PriorityQueue<Evento>();
 		aleatorios = new LinkedList<Float>();
+		//--
 		geraAleatorios(n, x0);
+		//chegada sempre na primeira fila
 		agenda.add(new Evento(tempoInicial, filas.getFirst(), filas.getFirst(), 'c'));
 	}
 
@@ -33,9 +39,12 @@ public class FilaRoteamento {
 
     public void run() {
 		//usa dois aleatorios a menos lembrar disso ao testar com aleatorios controlados
+		//o algoritmo para ao consumir todos os aleatorios
 		while(aleatorios.size() > 2) {
+			//retira um evento da fila
 			e = agenda.poll();
 
+			//contabiliza tempo
 			for(Fila f : filas) {
 				if(f.get(f.getF()) == null) {
 					f.count(f.getF(), (e.tempo-tempoTotal));
@@ -46,14 +55,17 @@ public class FilaRoteamento {
 
 			tempoTotal = e.tempo;
 			
+			//verifica o tipo do evento
+
+			//chegada
 			if(e.tipo == 'c') {
 				chegada(e.getSource(), e.getTarget());
 			}
-
+			//passagem de uma fila para outro (saida e chegada)
 			if(e.tipo == 'p') {
 				passagem(e.getSource(), e.getTarget());
 			}
-
+			//saida
 			if(e.tipo == 's') {
 				saida(e.getSource(), e.getTarget());
 			}
@@ -61,10 +73,13 @@ public class FilaRoteamento {
 		resultado();
 	}
 
+	//algoritmo da chegada
 	public void chegada(Fila source, Fila target) {
+		//-1 representa uma fila de capacidade infinita
 		if(source.getF() < source.getK() || source.getK() == -1) {
 			source.inc();
 			if(source.getF() <= source.getC()) {
+				//consome um aleatorio e verifica se vai acontecer uma saida, ou chegada em outra fila (ver metodo target em Fila)
 				agenda.add(source.target(aleatorios.pop(), (tempoTotal + rand(source.getInicioA(), source.getFimA())), source));
 			}
 		} else {
@@ -73,6 +88,7 @@ public class FilaRoteamento {
 		agenda.add(new Evento(tempoTotal + rand(intervaloChegada[0],intervaloChegada[1]), source, target, 'c'));
 	}
 
+	//algoritmo da saida
 	public void saida(Fila source, Fila target) {
 		source.dec();
 		if(source.getF() >= source.getC()) {
@@ -80,12 +96,15 @@ public class FilaRoteamento {
 		}
 	}
 
+	//saida + chegada
 	public void passagem(Fila source, Fila target) {
+		//saida de uma fila
 		source.dec();
 		if(source.getF() >= source.getC()) {
 			agenda.add(source.target(aleatorios.pop(), (tempoTotal + rand(source.getInicioA(), source.getFimA())), source));
 		}
 		
+		//chegada em outra fila
 		if(target.getF() < target.getK() || target.getK() == -1) {
 			target.inc();
 			if(target.getF() <= target.getC()) {
@@ -96,6 +115,7 @@ public class FilaRoteamento {
 		}
 	}
 
+	//Congruente Linear
 	public void geraAleatorios(int n, int x0) {
 		float aux = x0;
 		for(int i=0;i<n;i++) {
@@ -104,6 +124,7 @@ public class FilaRoteamento {
 		}
 	}
 
+	//encaixa o aleatorio entre a e b
 	public float rand(float a, float b) {
         return ((b - a) * aleatorios.pop()) + a;
     }

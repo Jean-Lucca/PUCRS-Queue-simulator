@@ -1,4 +1,5 @@
 public class Evento implements Comparable<Evento> {
+    //o evento consiste em uma fila de origem e ma fila destino
     protected float tempo;
     private Fila source;
     private Fila target;

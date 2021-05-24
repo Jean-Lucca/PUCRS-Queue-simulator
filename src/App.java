@@ -9,11 +9,12 @@ public class App {
         menu();
     }
 
+    //usando metodo congruente linear
     public static FilaRoteamento centralDoAlunoCL() {
         filas = new LinkedList<Fila>();
         int primeiraChegada = 1;
         intervaloChegada = new float[] {1,5};
-
+        
         Fila F1 = new Fila("SENHA", 1, -1, (float) 0.08, 1);
         Fila F2 = new Fila("ATENDIMENTO", 3, 10, 5, 15);
         Fila F3 = new Fila("FINANCEIRO", 2, 10, 5, 25);
@@ -48,6 +49,7 @@ public class App {
         return new FilaRoteamento(filas, intervaloChegada, primeiraChegada, 100000, 123);
     }
 
+    //usando aleatorios
     public static FilaRoteamento centralDoAlunoT() {
         filas = new LinkedList<Fila>();
         LinkedList<Float> aleatorios = t();
@@ -90,6 +92,7 @@ public class App {
         return new FilaRoteamento(filas, intervaloChegada, primeiraChegada, aleatorios);
     }
 
+    //aleatorios usados nos testes
     public static LinkedList<Float> t() {
         LinkedList<Float> aleatorios = new LinkedList<Float>();
         aleatorios.add((float) 0.2176);
